@@ -38,7 +38,6 @@ export default function App() {
             <SkatingScene />
             <SnowmanBattle />
             <BackgroundMusic />
-            <SnowTerrain />
 
           </Suspense>
         </Canvas>

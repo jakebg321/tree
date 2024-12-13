@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Html } from '@react-three/drei'
 
 export const BackgroundMusic = () => {
   const [audio] = useState(() => new Audio())
@@ -41,27 +40,5 @@ export const BackgroundMusic = () => {
     setIsPlaying(!isPlaying)
   }
 
-  return (
-    <Html position={[0, -3, 0]} center>
-      <button
-        onClick={togglePlay}
-        disabled={!isLoaded}
-        style={{
-          padding: '10px 20px',
-          borderRadius: '20px',
-          border: 'none',
-          backgroundColor: isPlaying ? '#ff4444' : '#44ff44',
-          color: 'white',
-          cursor: isLoaded ? 'pointer' : 'default',
-          opacity: isLoaded ? 1 : 0.5,
-          fontFamily: 'Arial',
-          fontSize: '14px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-        }}
-      >
-        {!isLoaded ? '🎵 Loading...' : 
-         isPlaying ? '🔇 Mute Music' : '🎵 Play Music'}
-      </button>
-    </Html>
-  )
+  return null
 }

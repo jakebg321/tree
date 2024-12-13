@@ -6,14 +6,14 @@ import * as THREE from 'three'
 const SnowballExplosion = ({ position }) => {
   const particles = useRef()
   const [visible, setVisible] = useState(true)
-  const particleCount = 20
+  const particleCount = 50  // Increased from 20
   
   const positions = useMemo(() => {
     const pos = new Float32Array(particleCount * 3)
     for (let i = 0; i < particleCount; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 0.5
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 0.5
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 0.5
+      pos[i * 3] = (Math.random() - 0.5) * 0.8    // Increased spread
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 0.8
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 0.8
     }
     return pos
   }, [])
@@ -22,16 +22,16 @@ const SnowballExplosion = ({ position }) => {
     if (particles.current) {
       const positions = particles.current.geometry.attributes.position.array
       for (let i = 0; i < particleCount; i++) {
-        positions[i * 3] += (Math.random() - 0.5) * 0.1
-        positions[i * 3 + 1] += Math.random() * 0.1
-        positions[i * 3 + 2] += (Math.random() - 0.5) * 0.1
+        positions[i * 3] += (Math.random() - 0.5) * 0.15   // Increased movement
+        positions[i * 3 + 1] += Math.random() * 0.15
+        positions[i * 3 + 2] += (Math.random() - 0.5) * 0.15
       }
       particles.current.geometry.attributes.position.needsUpdate = true
     }
   })
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(false), 500)
+    const timer = setTimeout(() => setVisible(false), 800)  // Increased duration
     return () => clearTimeout(timer)
   }, [])
 
@@ -73,16 +73,15 @@ const Snowball = ({ position, target, onHit }) => {
       const progress = Math.min(time, 1)
       const height = 2 * Math.sin(progress * Math.PI)
       
-      // Calculate current position
       const currentPos = new THREE.Vector3()
       currentPos.lerpVectors(startPos, targetPos, progress)
       currentPos.y += height
       
       ref.current.position.copy(currentPos)
       
-      // Add trail effect
+      // Enhanced trail effect
       if (progress < 1) {
-        setTrail(prev => [...prev.slice(-10), {...currentPos}])
+        setTrail(prev => [...prev.slice(-15), {...currentPos}]) // Increased trail length
       }
       
       if (progress >= 1) {
@@ -93,31 +92,63 @@ const Snowball = ({ position, target, onHit }) => {
 
   return (
     <>
-      <mesh ref={ref} position={position}>
-        <sphereGeometry args={[0.15, 16, 16]} />
-        <meshStandardMaterial color="white" />
-      </mesh>
-      {/* Render trail */}
+      {/* Main snowball with glow */}
+      <group>
+        {/* Glow sphere */}
+        <mesh ref={ref} position={position} scale={[1.4, 1.4, 1.4]}>
+          <sphereGeometry args={[0.15, 16, 16]} />
+          <meshStandardMaterial 
+            color="#4466ff"
+            transparent
+            opacity={0.15}
+            side={THREE.BackSide}
+          />
+        </mesh>
+        {/* Main snowball */}
+        <mesh ref={ref} position={position}>
+          <sphereGeometry args={[0.2, 16, 16]} /> {/* Increased size */}
+          <meshStandardMaterial 
+            color="white" 
+            emissive="#6699ff"
+            emissiveIntensity={0.5}
+            toneMapped={false}
+          />
+        </mesh>
+      </group>
+
+      {/* Enhanced trail */}
       {trail.map((pos, i) => (
-        <mesh key={i} position={[pos.x, pos.y, pos.z]} scale={[0.1 * (1 - i/10), 0.1 * (1 - i/10), 0.1 * (1 - i/10)]}>
+        <mesh 
+          key={i} 
+          position={[pos.x, pos.y, pos.z]} 
+          scale={[0.15 * (1 - i/15), 0.15 * (1 - i/15), 0.15 * (1 - i/15)]}
+        >
           <sphereGeometry args={[1, 8, 8]} />
-          <meshStandardMaterial color="white" transparent opacity={0.2 * (1 - i/10)} />
+          <meshStandardMaterial 
+            color="#ffffff"
+            emissive="#6699ff"
+            emissiveIntensity={0.3 * (1 - i/15)}
+            transparent 
+            opacity={0.3 * (1 - i/15)}
+          />
         </mesh>
       ))}
     </>
   )
 }
 
-const Snowman = ({ position, rotation, isHit }) => {
+const Snowman = ({ position, rotation, isHit, isThrowingSnowball }) => {
   const groupRef = useRef()
+  const rightArmRef = useRef()
+  const leftArmRef = useRef()
   const [wobble, setWobble] = useState({ x: 0, y: 0 })
   
   useEffect(() => {
     if (isHit) {
       // Random wobble direction
       setWobble({
-        x: (Math.random() - 0.5) * 0.5,
-        y: (Math.random() - 0.5) * 0.5
+        x: (Math.random() - 0.65) * 0.5,
+        y: (Math.random() - 0.65) * 0.5
       })
       // Reset wobble after animation
       const timer = setTimeout(() => setWobble({ x: 0, y: 0 }), 300)
@@ -125,11 +156,35 @@ const Snowman = ({ position, rotation, isHit }) => {
     }
   }, [isHit])
 
-  useFrame(() => {
+  useFrame((state, delta) => {
     if (groupRef.current) {
-      // Smooth return to original position
+      // Smooth return to original position for wobble
       groupRef.current.rotation.x += (wobble.x - groupRef.current.rotation.x) * 0.1
       groupRef.current.rotation.z += (wobble.y - groupRef.current.rotation.z) * 0.1
+    }
+
+    // Enhanced arm throwing animation
+    if (rightArmRef.current && leftArmRef.current) {
+      if (isThrowingSnowball) {
+        const throwingArm = position[0] > 0 ? leftArmRef.current : rightArmRef.current
+        // Wind up and throw animation
+        throwingArm.rotation.x = THREE.MathUtils.lerp(
+          throwingArm.rotation.x,
+          -Math.PI * 0.8,  // More extreme throw angle
+          0.4  // Faster movement
+        )
+        throwingArm.rotation.z = Math.sin(state.clock.elapsedTime * 8) * 0.2  // Add wobble
+        // Scale effect during throw
+        throwingArm.scale.y = 1 + Math.sin(state.clock.elapsedTime * 8) * 0.1
+      } else {
+        // Smooth return to rest position
+        rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, Math.PI / 4, 0.15)
+        leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, Math.PI / 4, 0.15)
+        rightArmRef.current.rotation.z = THREE.MathUtils.lerp(rightArmRef.current.rotation.z, 0, 0.15)
+        leftArmRef.current.rotation.z = THREE.MathUtils.lerp(leftArmRef.current.rotation.z, 0, 0.15)
+        rightArmRef.current.scale.y = THREE.MathUtils.lerp(rightArmRef.current.scale.y, 1, 0.15)
+        leftArmRef.current.scale.y = THREE.MathUtils.lerp(leftArmRef.current.scale.y, 1, 0.15)
+      }
     }
   })
 
@@ -169,12 +224,12 @@ const Snowman = ({ position, rotation, isHit }) => {
         <meshStandardMaterial color="#ff6b0f" />
       </mesh>
 
-      {/* Stick arms */}
-      <mesh position={[0.6, 1.5, 0]} rotation={[0, 0, Math.PI / 4]}>
+      {/* Updated stick arms with refs */}
+      <mesh ref={rightArmRef} position={[0.6, 1.5, 0]} rotation={[Math.PI / 4, 0, Math.PI / 4]}>
         <cylinderGeometry args={[0.05, 0.05, 0.8]} />
         <meshStandardMaterial color="#3e2723" />
       </mesh>
-      <mesh position={[-0.6, 1.5, 0]} rotation={[0, 0, -Math.PI / 4]}>
+      <mesh ref={leftArmRef} position={[-0.6, 1.5, 0]} rotation={[Math.PI / 4, 0, -Math.PI / 4]}>
         <cylinderGeometry args={[0.05, 0.05, 0.8]} />
         <meshStandardMaterial color="#3e2723" />
       </mesh>
@@ -192,6 +247,7 @@ export const SnowmanBattle = () => {
   const [snowballs, setSnowballs] = useState([])
   const [explosions, setExplosions] = useState([])
   const [hitStates, setHitStates] = useState({ left: false, right: false })
+  const [throwingStates, setThrowingStates] = useState({ left: false, right: false })
   const snowballId = useRef(0)
   
   const positions = {
@@ -205,14 +261,30 @@ export const SnowmanBattle = () => {
       const start = isLeft ? positions.leftSnowman : positions.rightSnowman
       const target = isLeft ? positions.rightSnowman : positions.leftSnowman
       
-      // Add random variation to throw
-      const variationX = (Math.random() - 0.5) * 2
-      const variationZ = (Math.random() - 0.5) * 2
+      // Set throwing animation state
+      setThrowingStates(prev => ({
+        ...prev,
+        [isLeft ? 'left' : 'right']: true
+      }))
+
+      // Longer throwing animation duration
+      setTimeout(() => {
+        setThrowingStates(prev => ({
+          ...prev,
+          [isLeft ? 'left' : 'right']: false
+        }))
+      }, 800)  // Increased from 500
       
+      // Adjust start position to be in the throwing hand
+      const handOffset = isLeft ? [-0.6, 1.5, 0] : [0.6, 1.5, 0]
       setSnowballs(prev => [...prev, {
         id: snowballId.current,
-        start: [start[0], start[1] + 2, start[2]],
-        target: [target[0] + variationX, target[1] + 2, target[2] + variationZ]
+        start: [
+          start[0] + handOffset[0],
+          start[1] + handOffset[1],
+          start[2] + handOffset[2]
+        ],
+        target: [target[0], target[1] + 2, target[2]]
       }])
       
       snowballId.current++
@@ -255,11 +327,13 @@ export const SnowmanBattle = () => {
         position={positions.leftSnowman} 
         rotation={[0, Math.PI / 4, 0]}
         isHit={hitStates.left}
+        isThrowingSnowball={throwingStates.left}
       />
       <Snowman 
         position={positions.rightSnowman} 
         rotation={[0, -Math.PI / 4, 0]}
         isHit={hitStates.right}
+        isThrowingSnowball={throwingStates.right}
       />
       
       {snowballs.map(ball => (

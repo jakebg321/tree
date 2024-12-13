@@ -20,21 +20,18 @@ export const Node = ({
     if (nodeRef.current) {
       const t = state.clock.elapsedTime
       
-      // Base animation
-      const scale = 1 + Math.sin(t * 2) * 0.05
-      nodeRef.current.scale.setScalar(scale)
+      // Optimize animations based on node type
+      const baseScale = isBitcoin ? 1.2 : 1
+      const animationScale = isPulsing ? 
+        baseScale + Math.sin(t * 4) * 0.2 :
+        baseScale + Math.sin(t * 2) * 0.05
       
-      // Pulse animation for active transactions
-      if (isPulsing) {
-        const pulseScale = 1 + Math.sin(t * 4) * 0.2
-        nodeRef.current.scale.setScalar(pulseScale)
-        
-        if (glowRef.current) {
-          glowRef.current.material.opacity = intensity * (0.6 + Math.sin(t * 4) * 0.4)
-        }
+      nodeRef.current.scale.setScalar(animationScale)
+      
+      if (glowRef.current && isPulsing) {
+        glowRef.current.material.opacity = intensity * (0.6 + Math.sin(t * 4) * 0.4)
       }
 
-      // Bitcoin symbol rotation if applicable
       if (isBitcoin && bitcoinRef.current) {
         bitcoinRef.current.rotation.y = t * 0.5
       }

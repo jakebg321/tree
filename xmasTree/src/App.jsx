@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber'
-import { Suspense } from 'react'
+import { Suspense, useRef } from 'react'
 import Scene from './components/Scene/Scene'
 import SnowBk from './snowBk'
 import SnowBase from './SnowBase'
@@ -14,18 +14,23 @@ import { BackgroundMusic } from './components/BackgroundMusic'
 import { NavigationButtons } from './NavigationButtons'
 import SnowTerrain from './SnowTerrain';
 import { CryptoWorkshop } from './CryptoWorkshop'
+import { UniqueSnowflakeButton } from './UniqueSnowflakeButton'
 
 export default function App() {
+  const simulatorRef = useRef(null)
+
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#000' }}>
       <ErrorBoundary>
         <Canvas /* ... existing Canvas props ... */>
           <Suspense fallback={null}>
-            <EnhancedCameraController />
+            <EnhancedCameraController simulatorRef={simulatorRef} />
             <SceneButtons />
             <ambientLight intensity={0.4} />
             <Scene />
             <SantaSleigh />
+            <UniqueSnowflakeButton />
+
             <CryptoWorkshop />
 
             <SnowBase />
@@ -38,7 +43,7 @@ export default function App() {
           </Suspense>
         </Canvas>
 
-        <NavigationButtons /> {/* Outside the Canvas */}
+        <NavigationButtons simulatorRef={simulatorRef} />
 
       </ErrorBoundary>
     </div>

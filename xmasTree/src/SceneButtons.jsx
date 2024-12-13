@@ -75,7 +75,7 @@ export const SceneButtons = () => {
       />
       <ViewButton 
         label="Crypto Address" 
-        position={[-10, 0, 5]}
+        position={[-10, 3, 5]}
         onClick={() => window.moveToView('crypto')}
       />
       {/* Add more buttons as needed */}

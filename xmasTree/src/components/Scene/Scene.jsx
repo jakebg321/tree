@@ -25,11 +25,11 @@ export default function Scene() {
       <OrbitControls 
         ref={orbitControlsRef}
         enablePan={false}
-        maxDistance={15}
+        maxDistance={20} // Increased from 15 to allow zooming out further
         minDistance={4}
         enableDamping
         dampingFactor={0.05}
-        maxPolarAngle={Math.PI / 2} // Add this line
+        maxPolarAngle={Math.PI * 0.65} // Increased from Math.PI / 2 to allow higher viewing angle
         makeDefault
       />
     </>

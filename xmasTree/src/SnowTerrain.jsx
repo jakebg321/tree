@@ -54,7 +54,7 @@ const SnowTerrain = () => {
       >
         <planeGeometry args={[terrainSize, terrainSize]} />
         <meshStandardMaterial
-          color="#ffffff"
+          color="#e5e5e5"
           side={THREE.FrontSide}
         />
       </mesh>
@@ -66,7 +66,7 @@ const SnowTerrain = () => {
         geometry={generateHeightMap()}
       >
         <meshStandardMaterial
-          color="#ffffff"
+          color="#ebebeb"
           roughness={0.95}
           metalness={0.05}
           side={THREE.FrontSide}
@@ -80,11 +80,11 @@ const SnowTerrain = () => {
         geometry={generateHeightMap()}
       >
         <meshStandardMaterial
-          color="#e8f0ff"
+          color="#e0e8ff"
           roughness={0.3}
           metalness={0.6}
           transparent
-          opacity={0.1}
+          opacity={0.05}
           side={THREE.FrontSide}
           depthWrite={false}
         />

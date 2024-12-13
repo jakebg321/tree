@@ -87,11 +87,7 @@ export default function ChristmasTree() {
 
   return (
     <group>
-      <Controls
-        simulationSpeed={simulationSpeed}
-        setSimulationSpeed={setSimulationSpeed}
-        simulatorRef={simulatorRef}
-      />
+      {/* Remove Controls component here */}
       
       {/* Base mesh structure */}
       <mesh>
@@ -168,50 +164,4 @@ export default function ChristmasTree() {
   )
 }
 
-const Controls = ({ simulationSpeed, setSimulationSpeed, simulatorRef }) => (
-  <Html position={[0, -4, 0]} center>
-    <div style={{
-      background: 'rgba(0,0,0,0.7)',
-      padding: '10px',
-      borderRadius: '5px',
-      color: '#fff',
-      width: '300px'
-    }}>
-      <div>
-        <label>Simulation Speed (ms): {simulationSpeed}</label>
-        <input 
-          type="range" 
-          min="100" 
-          max="5000" 
-          value={simulationSpeed}
-          onChange={(e) => {
-            const newSpeed = parseInt(e.target.value)
-            setSimulationSpeed(newSpeed)
-            if (simulatorRef.current) {
-              simulatorRef.current.stop()
-              simulatorRef.current = createTransactionSimulator({
-                minInterval: newSpeed,
-                maxInterval: newSpeed + 1000
-              })
-              simulatorRef.current.start()
-            }
-          }}
-          style={{ width: '100%' }}
-        />
-      </div>
-      <button 
-        onClick={() => simulatorRef.current?.generateBurst(10)}
-        style={{
-          background: '#00ff99',
-          border: 'none',
-          padding: '5px 10px',
-          borderRadius: '3px',
-          marginTop: '5px',
-          cursor: 'pointer'
-        }}
-      >
-        Generate 10 Transactions
-      </button>
-    </div>
-  </Html>
-)
+// Remove the Controls component definition

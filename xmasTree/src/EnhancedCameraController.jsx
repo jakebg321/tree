@@ -1,6 +1,7 @@
 import { useThree } from '@react-three/fiber'
 import { useEffect, useState } from 'react'
 import * as THREE from 'three'
+import { NodeManager } from './managers/NodeManager'
 
 const VIEWPOINTS = {
   default: {
@@ -33,7 +34,7 @@ const VIEWPOINTS = {
   }
 }
 
-export const EnhancedCameraController = () => {
+export const EnhancedCameraController = ({ simulatorRef }) => {
   const { camera, controls } = useThree()
   const [currentView, setCurrentView] = useState('default')
   const [transitioning, setTransitioning] = useState(false)
@@ -133,6 +134,21 @@ export const EnhancedCameraController = () => {
       delete window.handleBack
     }
   }, [])
+
+  useEffect(() => {
+    const nodeManager = new NodeManager()
+
+    // Subscribe to transaction events
+    const unsubscribe = simulatorRef.current?.addListener((transaction) => {
+      const node = nodeManager.handleTransaction(transaction)
+      // You can add additional visualization logic here
+      console.log('New transaction node:', node)
+    })
+
+    return () => {
+      if (unsubscribe) unsubscribe()
+    }
+  }, [simulatorRef])
 
   return null
 }

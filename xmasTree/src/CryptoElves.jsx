@@ -1,23 +1,36 @@
-// CryptoElves.jsx
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
+import * as THREE from 'three'
 
-const Elf = ({ position, offset = 0, scale = 1 }) => {
+const Elf = ({ position, offset = 0, scale = 1, onHammerImpact }) => {
   const elfRef = useRef()
   const armRef = useRef()
   const hammerGlowRef = useRef()
+  const lastImpactTime = useRef(0)
 
   useFrame((state) => {
     if (armRef.current && elfRef.current) {
       const time = state.clock.getElapsedTime()
-      // More deliberate hammering animation
-      armRef.current.rotation.x = Math.sin((time + offset) * 8) * 0.4 - 0.3
       
-      // Slight body movement while working
+      // Hammering animation
+      const hammerAngle = Math.sin((time + offset) * 8) * 0.4 - 0.3
+      armRef.current.rotation.x = hammerAngle
+      
+      // Detect hammer impact
+      if (hammerAngle > 0.35 && time - lastImpactTime.current > 0.2) {
+        lastImpactTime.current = time
+        if (onHammerImpact) {
+          const hammerPosition = new THREE.Vector3()
+          hammerGlowRef.current.getWorldPosition(hammerPosition)
+          onHammerImpact(hammerPosition.toArray())
+        }
+      }
+      
+      // Body animation
       elfRef.current.position.y = position[1] + Math.sin((time + offset) * 2) * 0.05
       elfRef.current.rotation.z = Math.sin((time + offset) * 2) * 0.03
       
-      // Hammer glow effect synced with hammering
+      // Hammer glow
       if (hammerGlowRef.current) {
         hammerGlowRef.current.material.emissiveIntensity = 0.5 + Math.sin(time * 8) * 0.3
       }
@@ -64,7 +77,6 @@ const Elf = ({ position, offset = 0, scale = 1 }) => {
           <cylinderGeometry args={[0.05, 0.05, 0.3, 6]} />
           <meshStandardMaterial color="#2da44e" />
         </mesh>
-        {/* Glowing Hammer */}
         <mesh ref={hammerGlowRef} position={[0.2, -0.1, 0]}>
           <boxGeometry args={[0.15, 0.15, 0.25]} />
           <meshStandardMaterial 
@@ -108,72 +120,26 @@ const Elf = ({ position, offset = 0, scale = 1 }) => {
   )
 }
 
-const Workbench = () => {
+export const CryptoElves = ({ 
+  leftPosition, 
+  rightPosition, 
+  onLeftHammerImpact, 
+  onRightHammerImpact 
+}) => {
   return (
-    <group position={[0, -0.3, 0]}>
-      {/* Desktop surface */}
-      <mesh position={[0, 0.4, 0]}>
-        <boxGeometry args={[2.2, 0.1, 0.8]} />
-        <meshStandardMaterial 
-          color="#1a1a2e"
-          metalness={0.8}
-          roughness={0.2}
-          emissive="#000033"
-          emissiveIntensity={0.5}
-        />
-      </mesh>
-
-      {/* Table legs */}
-      {[[-0.9, -0.3, -0.3], [0.9, -0.3, -0.3], 
-        [-0.9, -0.3, 0.3], [0.9, -0.3, 0.3]].map((pos, i) => (
-        <mesh key={i} position={pos}>
-          <cylinderGeometry args={[0.05, 0.05, 0.8, 8]} />
-          <meshStandardMaterial 
-            color="#1a1a2e"
-            metalness={0.8}
-          />
-        </mesh>
-      ))}
-
-      {/* Holographic projectors */}
-      {[-1, 1].map((x, i) => (
-        <mesh key={i} position={[x, 0.45, 0]}>
-          <cylinderGeometry args={[0.1, 0.05, 0.1, 8]} />
-          <meshStandardMaterial 
-            color="#00ffff"
-            emissive="#00ffff"
-            emissiveIntensity={0.8}
-            metalness={0.9}
-          />
-        </mesh>
-      ))}
-    </group>
-  )
-}
-
-export const CryptoWorkshopScene = () => {
-  return (
-    <group position={[0, 0, -8]}>
-      <ambientLight intensity={0.5} />
-      <pointLight
-        position={[0, 5, 0]}
-        intensity={2}
-        color="#00ffff"
-        distance={10}
-        decay={2}
+    <>
+      <Elf 
+        position={leftPosition} 
+        offset={0} 
+        scale={1} 
+        onHammerImpact={onLeftHammerImpact}
       />
-      <spotLight
-        position={[0, 8, 0]}
-        angle={0.5}
-        penumbra={0.5}
-        intensity={2}
-        color="#4444ff"
-        castShadow
+      <Elf 
+        position={rightPosition} 
+        offset={Math.PI} 
+        scale={1} 
+        onHammerImpact={onRightHammerImpact}
       />
-
-      <Workbench />
-      <Elf position={[-0.8, 0, 0.2]} offset={0} scale={1} />
-      <Elf position={[0.8, 0, 0.2]} offset={Math.PI} scale={1} />
-    </group>
+    </>
   )
 }

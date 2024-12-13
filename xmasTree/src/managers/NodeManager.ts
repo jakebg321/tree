@@ -65,6 +65,10 @@ export class NodeManager {
 
   private calculateNodePosition(type: string, amount?: number): [number, number, number] {
     // Log the incoming parameters
+    console.log('Calculating position for:', { type, amount })
+    
+    // Calculate height based on tree dimensions
+    const height = this.treeHeight * this.currentScale
     
     // If it's a transaction, log the height calculation
     let y

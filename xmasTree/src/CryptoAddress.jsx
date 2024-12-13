@@ -1,10 +1,8 @@
-
-// CryptoAddress.jsx
 import { useState, useRef } from 'react'
 import { Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 
-export const CryptoAddressDisplay = () => {
+export const CryptoAddressDisplay = ({ activeCharIndex = 0 }) => {
   const [copied, setCopied] = useState(false)
   const glowRef = useRef()
   const address = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
@@ -18,7 +16,6 @@ export const CryptoAddressDisplay = () => {
   useFrame((state) => {
     if (glowRef.current) {
       const time = state.clock.getElapsedTime()
-      // Sync glow with elf hammering
       glowRef.current.style.boxShadow = `0 0 ${10 + Math.sin(time * 8) * 5}px #00ffff`
     }
   })
@@ -36,10 +33,13 @@ export const CryptoAddressDisplay = () => {
             {address.split('').map((char, i) => (
               <span 
                 key={i}
-                className="inline-block"
+                className="inline-block transition-all duration-300"
                 style={{
-                  animation: `glow 1s ${i * 0.1}s infinite`,
-                  opacity: 0.7 + Math.random() * 0.3
+                  color: i < activeCharIndex ? '#00ffff' : '#164e63',
+                  textShadow: i < activeCharIndex ? '0 0 10px #00ffff' : 'none',
+                  transform: `translateY(${i === activeCharIndex - 1 ? '-2px' : '0'})`,
+                  opacity: i < activeCharIndex ? 1 : 0.5,
+                  animation: i < activeCharIndex ? 'glow 1s infinite' : 'none'
                 }}
               >
                 {char}
@@ -58,7 +58,7 @@ export const CryptoAddressDisplay = () => {
       <style>{`
         @keyframes glow {
           0%, 100% { text-shadow: 0 0 5px #00ffff; }
-          50% { text-shadow: 0 0 10px #00ffff; }
+          50% { text-shadow: 0 0 15px #00ffff, 0 0 25px #00ffff; }
         }
       `}</style>
     </Html>

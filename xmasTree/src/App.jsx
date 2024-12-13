@@ -13,6 +13,8 @@ import { SceneButtons } from './SceneButtons'
 import { BackgroundMusic } from './components/BackgroundMusic'
 import { NavigationButtons } from './NavigationButtons'
 import SnowTerrain from './SnowTerrain';
+import { CryptoWorkshop } from './CryptoWorkshop'
+
 export default function App() {
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#000' }}>
@@ -24,6 +26,8 @@ export default function App() {
             <ambientLight intensity={0.4} />
             <Scene />
             <SantaSleigh />
+            <CryptoWorkshop />
+
             <SnowBase />
             <PresentBase />
             <SkatingScene />

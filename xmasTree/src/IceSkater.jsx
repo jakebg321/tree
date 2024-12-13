@@ -6,7 +6,7 @@ import { audioManager } from './BackgroundMusic'
 import { IceSkaterSpeech, skaterDialogSequence } from './IceSkaterSpeech'
 
 const SpeechBubble = ({ text }) => (
-  <Html position={[0, 2, 0]} center>
+  <Html position={[2, 2, 0]} center>
     <div style={{
       background: 'rgba(255, 255, 255, 0.9)',
       padding: '10px 15px',

@@ -7,7 +7,7 @@ export const audioManager = {
   setSkaterTalking: (isTalking) => {
     audioManager.isSkaterTalking = isTalking
     if (audioManager.backgroundMusic) {
-      audioManager.backgroundMusic.volume = isTalking ? 0.1 : 0.3
+      audioManager.backgroundMusic.volume = isTalking ? 0.05 : 0.15
     }
   },
   backgroundMusic: null,
@@ -20,23 +20,14 @@ export const audioManager = {
 
 export const BackgroundMusic = () => {
   const audioRef = useRef(null)
-  const [isPlaying, setIsPlaying] = useState(true) // Default to true for autoplay
+  const [isPlaying, setIsPlaying] = useState(true)
   
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = 0.3 // Set initial volume to 30%
+      audioRef.current.volume = 0.15
       audioManager.backgroundMusic = audioRef.current
-      
-      // Start playing automatically
       audioRef.current.currentTime = 10
-      const playPromise = audioRef.current.play()
-      
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.log("Autoplay prevented:", error)
-          setIsPlaying(false)
-        })
-      }
+      audioRef.current.play()
 
       audioRef.current.addEventListener('timeupdate', () => {
         if (audioRef.current.currentTime >= audioRef.current.duration - 10) {
@@ -45,7 +36,6 @@ export const BackgroundMusic = () => {
       })
     }
 
-    // Cleanup
     return () => {
       if (audioRef.current) {
         audioRef.current.pause()
@@ -71,24 +61,27 @@ export const BackgroundMusic = () => {
         ref={audioRef}
         src="/SPACETRAIN UNLIMITED - Christmas Wonderland.mp3"
         loop
-        style={{ display: 'none' }}
+        autoPlay
       />
       <Html position={[-1, -3, 0]}>
         <button
           onClick={togglePlay}
           style={{
-            padding: '10px 20px',
-            borderRadius: '20px',
+            padding: '10px',
+            borderRadius: '50%',
             border: 'none',
-            backgroundColor: isPlaying ? '#ff4444' : '#44ff44',
+            backgroundColor: 'rgba(0,0,0,0.7)',
             color: 'white',
             cursor: 'pointer',
-            fontFamily: 'Arial',
-            fontSize: '14px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+            width: '40px',
+            height: '40px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '20px'
           }}
         >
-          {isPlaying ? '🔇 Mute Music' : '🎵 Play Music'}
+          {isPlaying ? '⏸️' : '▶️'}
         </button>
       </Html>
     </>

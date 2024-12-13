@@ -42,6 +42,20 @@ const ViewButton = ({ label, position, onClick }) => {
   )
 }
 
+window.moveToView = (view) => {
+  switch (view) {
+    case 'snowman':
+      window.snowmanView();
+      break;
+    case 'skater':
+      window.skaterView();
+      break;
+    case 'crypto':
+      window.cryptoView();
+      break;
+  }
+}
+
 export const SceneButtons = () => {
   return (
     <>
@@ -58,6 +72,11 @@ export const SceneButtons = () => {
           window.moveToView('skater')
           playSkaterSpeech()
         }}
+      />
+      <ViewButton 
+        label="Crypto Address" 
+        position={[-10, 0, 5]}
+        onClick={() => window.moveToView('crypto')}
       />
       {/* Add more buttons as needed */}
     </>

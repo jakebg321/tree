@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import Scene from './components/Scene/Scene'
 import SnowBk from './snowBk'
 import SnowBase from './SnowBase'
+import { SantaSleigh } from './SantaSleigh' // Update the import statement
 import ErrorBoundary from './components/ErrorBoundary'
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
         >
           <Suspense fallback={null}>
             <Scene />
+            <SantaSleigh /> {/* Add this line */}
           </Suspense>
         </Canvas>
       </ErrorBoundary>

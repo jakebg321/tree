@@ -1,10 +1,16 @@
 import { OrbitControls, Environment } from '@react-three/drei'
+import { useRef, useEffect } from 'react'
 import ChristmasTree from './ChristmasTree'
 import SnowBk from '../../snowBk'
 import SnowBase from '../../SnowBase'
 
-
 export default function Scene() {
+  const orbitControlsRef = useRef()
+
+  useEffect(() => {
+    window.orbitControlsRef = orbitControlsRef;
+  }, []);
+
   return (
     <>
       <color attach="background" args={['#000']} />
@@ -17,11 +23,14 @@ export default function Scene() {
       <SnowBase />
       
       <OrbitControls 
+        ref={orbitControlsRef}
         enablePan={false}
         maxDistance={15}
         minDistance={4}
         enableDamping
         dampingFactor={0.05}
+        maxPolarAngle={Math.PI / 2} // Add this line
+        makeDefault
       />
     </>
   )

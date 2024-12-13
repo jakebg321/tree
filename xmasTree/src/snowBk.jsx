@@ -8,7 +8,7 @@ export default function SnowBk() {
   
   // Reduced particle count to compensate for larger, more detailed flakes
   const particlesCount = 3000
-  const radius = 50
+  const radius = 50//////50 is good for snow ffs its bakwards alsmost stroked out at 5
   const fallSpeed = 0.015 // Slightly slower for more realistic movement
 
   // Create a custom texture for snowflakes
